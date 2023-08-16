@@ -38,6 +38,7 @@ controller:
   image:
     repository: neuvector/controller
     hash:
+    imagePullPolicy: IfNotPresent
   replicas: 3
   disruptionbudget: 0
   schedulerName:
@@ -247,6 +248,7 @@ enforcer:
   image:
     repository: neuvector/enforcer
     hash:
+    imagePullPolicy: IfNotPresent
   updateStrategy:
     type: RollingUpdate
   priorityClassName:
@@ -279,6 +281,7 @@ manager:
   image:
     repository: neuvector/manager
     hash:
+    imagePullPolicy: IfNotPresent
   priorityClassName:
   env:
     ssl: true
@@ -360,6 +363,7 @@ cve:
       repository: neuvector/registry-adapter
       tag: 0.1.0
       hash:
+      imagePullPolicy: IfNotPresent
     priorityClassName:
     resources:
       {}

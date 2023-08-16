@@ -64,6 +64,7 @@ spec:
           image: "{{ .Values.registry }}/{{ .Values.enforcer.image.repository }}:{{ .Values.tag }}"
           {{- end }}
           {{- end }}
+          imagePullPolicy: {{ .Values.enforcer.image.imagePullPolicy }}
           securityContext:
             privileged: true
           resources:
