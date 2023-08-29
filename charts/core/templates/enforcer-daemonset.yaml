@@ -1,9 +1,23 @@
 {{- if .Values.enforcer.enabled -}}
+{{- $apiVersion := "" }}
 {{- if (semverCompare ">=1.9-0" (substr 1 -1 .Capabilities.KubeVersion.GitVersion)) }}
-apiVersion: apps/v1
+  {{- $apiVersion = "apps/v1" }}
 {{- else }}
-apiVersion: extensions/v1beta1
+  {{- $apiVersion = "extensions/v1beta1" }}
 {{- end }}
+{{- $mountSecret := .Values.controller.certificate.forceUpdate -}}
+{{- $deployData := lookup $apiVersion "DaemonSet" .Release.Namespace "neuvector-controller-pod"}}
+{{- if $deployData }}
+  {{- $volumes := ((($deployData.spec).template).spec).volumes | default list -}}
+  {{- range $volumes | uniq -}}
+    {{- if eq .name "generated-internal-cert" }}
+      {{- $mountSecret = true -}}
+    {{- end }}
+  {{- end }}
+{{- else }}
+  {{- $mountSecret = true -}}
+{{- end }}
+apiVersion: {{ $apiVersion }}
 kind: DaemonSet
 metadata:
   name: neuvector-enforcer-pod

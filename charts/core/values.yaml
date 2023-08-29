@@ -122,6 +122,10 @@ controller:
       keyFile: tls.key
       pemFile: tls.crt
       caFile: ca.crt # must be the same CA for all internal.
+    ## Whether to force update to internal certificate.  When this option is enabled, specific steps must be followed to avoid service interferrence and data loss.
+    ##
+    ## default: false
+    forceUpdate: false
   federation:
     mastersvc:
       type:
