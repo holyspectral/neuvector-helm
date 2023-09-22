@@ -8,6 +8,7 @@ registry: docker.io
 tag: 5.2.1
 oem:
 imagePullSecrets:
+imagePullPolicy: IfNotPresent
 psp: false
 rbac: true # required for rancher authentication
 serviceAccount: default
