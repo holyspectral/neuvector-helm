@@ -40,7 +40,7 @@ spec:
         {{- if .Values.controller.configmap.enabled }}
         checksum/init-configmap: {{ include (print $.Template.BasePath "/init-configmap.yaml") . | sha256sum }}
         {{- end }}
-        {{- if .Values.autoGenerateCert }}
+        {{- if and (not .Values.controller.certificate.secret) .Values.autoGenerateCert }}
         checksum/controller-secret: {{ include (print $.Template.BasePath "/controller-secret.yaml") . | sha256sum }}
         {{- end }}
         {{- if .Values.controller.podAnnotations }}

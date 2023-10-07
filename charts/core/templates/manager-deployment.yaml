@@ -27,7 +27,7 @@ spec:
         {{- end }}
       {{- if or .Values.manager.podAnnotations .Values.autoGenerateCert }}
       annotations:
-        {{- if .Values.autoGenerateCert }}
+        {{- if and (not .Values.manager.certificate.secret) .Values.autoGenerateCert }}
         checksum/manager-secret: {{ include (print $.Template.BasePath "/manager-secret.yaml") . | sha256sum }}
         {{- end }}
         {{- if .Values.manager.podAnnotations }}

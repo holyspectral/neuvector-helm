@@ -27,7 +27,7 @@ spec:
         {{- end }}
       {{- if or .Values.cve.adapter.podAnnotations .Values.autoGenerateCert }}
       annotations:
-        {{- if .Values.autoGenerateCert }}
+        {{- if and (not .Values.cve.adapter.certificate.secret) .Values.autoGenerateCert }}
         checksum/registry-adapter-secret: {{ include (print $.Template.BasePath "/registry-adapter-secret.yaml") . | sha256sum }}
         {{- end }}
         {{- if .Values.cve.adapter.podAnnotations }}
