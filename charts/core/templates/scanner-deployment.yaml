@@ -95,8 +95,20 @@ spec:
           {{- end }}
           resources:
 {{ toYaml .Values.cve.scanner.resources | indent 12 }}
-          {{- if .Values.internal.certmanager.enabled }}
           volumeMounts:
+            - mountPath: /etc/neuvector/certs/internal/migration/cert.pem
+              subPath: cert.pem
+              name: migration-cert
+              readOnly: true
+            - mountPath: /etc/neuvector/certs/internal/migration/key.pem
+              subPath: key.pem
+              name: migration-cert
+              readOnly: true
+            - mountPath: /etc/neuvector/certs/internal/migration/ca.cert
+              subPath: ca.cert
+              name: migration-cert
+              readOnly: true
+          {{- if .Values.internal.certmanager.enabled }}
             - mountPath: /etc/neuvector/certs/internal/cert.key
               subPath: {{ .Values.cve.scanner.internal.certificate.keyFile }}
               name: internal-cert
@@ -111,8 +123,11 @@ spec:
               readOnly: true
           {{- end }}
       restartPolicy: Always
-      {{- if .Values.internal.certmanager.enabled }}
       volumes:
+        - name: migration-cert
+          secret:
+            secretName: neuvector-migration-secret
+      {{- if .Values.internal.certmanager.enabled }}
         - name: internal-cert
           secret:
             secretName: {{ .Values.cve.scanner.internal.certificate.secret }}

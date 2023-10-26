@@ -77,6 +77,16 @@ spec:
       serviceAccountName: {{ .Values.serviceAccount }}
       serviceAccount: {{ .Values.serviceAccount }}
       {{- end }}
+      initContainers:
+        - name: neuvector-controller-init-pod
+          image: holyspectral/kubectl
+          command: ["bash", "-c", "/upgrader pre-sync-hook"]
+          imagePullPolicy: Always
+          env:
+          - name: PODNAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
       containers:
         - name: neuvector-controller-pod
           {{- if .Values.global.azure.enabled }}
@@ -194,6 +204,18 @@ spec:
               subPath: ssl-cert.pem
               name: cert
               readOnly: true
+            - mountPath: /etc/neuvector/certs/internal/migration/cert.pem
+              subPath: cert.pem
+              name: migration-cert
+              readOnly: true
+            - mountPath: /etc/neuvector/certs/internal/migration/key.pem
+              subPath: key.pem
+              name: migration-cert
+              readOnly: true
+            - mountPath: /etc/neuvector/certs/internal/migration/ca.cert
+              subPath: ca.cert
+              name: migration-cert
+              readOnly: true
           {{- else }}
           {{- end }}
           {{- if .Values.internal.certmanager.enabled }}
@@ -257,6 +279,9 @@ spec:
         - name: nv-debug
           hostPath:
             path: /var/nv_debug
+        - name: migration-cert
+          secret:
+            secretName: neuvector-migration-secret
       {{- if .Values.autoGenerateCert }}
         - name: cert
           secret:
