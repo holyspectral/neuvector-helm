@@ -126,7 +126,7 @@ spec:
           {{- else }}
 {{ toYaml .Values.resources | indent 12 }}
           {{- end }}
-          {{- if .Values.internal.certmanager.enabled }}
+          {{- if or .Values.internal.certmanager.enabled .Values.internal.autoGenerateCert }}
           volumeMounts:
             - mountPath: /etc/neuvector/certs/internal/cert.key
               subPath: {{ .Values.cve.adapter.internal.certificate.keyFile }}
@@ -156,8 +156,11 @@ spec:
         - name: internal-cert
           secret:
             secretName: {{ .Values.cve.adapter.internal.certificate.secret }}
+      {{- else if .Values.internal.autoGenerateCert }}
+        - name: internal-cert
+          secret:
+            secretName: neuvector-internal-certs
       {{- end }}
-
 ---
 
 apiVersion: v1

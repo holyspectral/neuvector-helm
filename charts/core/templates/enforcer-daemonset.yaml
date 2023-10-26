@@ -119,7 +119,7 @@ spec:
             - mountPath: /var/nv_debug
               name: nv-debug
               readOnly: false
-          {{- if .Values.internal.certmanager.enabled }}
+          {{- if or .Values.internal.certmanager.enabled .Values.internal.autoGenerateCert }}
             - mountPath: /etc/neuvector/certs/internal/cert.key
               subPath: {{ .Values.enforcer.internal.certificate.keyFile }}
               name: internal-cert
@@ -167,5 +167,9 @@ spec:
         - name: internal-cert
           secret:
             secretName: {{ .Values.enforcer.internal.certificate.secret }}
+      {{- else if .Values.internal.autoGenerateCert }}
+        - name: internal-cert
+          secret:
+            secretName: neuvector-internal-certs
       {{- end }}
 {{- end }}

@@ -1,5 +1,23 @@
 {{- $pre530 := (semverCompare "<5.2.10" .Values.tag) -}}
 {{- if .Values.controller.enabled -}}
+{{- $image := "" }}
+{{- if .Values.global.azure.enabled }}
+{{- $image = printf "%s/%s@%s" .Values.global.azure.images.controller.registry .Values.global.azure.images.controller.image .Values.global.azure.images.controller.digest }}
+{{- else }}
+{{- if eq .Values.registry "registry.neuvector.com" }}
+{{- if .Values.oem }}
+{{- $image = printf "%s/%s/controller:%s" .Values.registry .Values.oem .Values.tag }}
+{{- else }}
+{{- $image = printf "%s/controller:%s" .Values.registry .Values.tag }}
+{{- end }}
+{{- else }}
+{{- if .Values.controller.image.hash }}
+{{- $image = printf "%s/%s@%s" .Values.registry .Values.controller.image.repository .Values.controller.image.hash }}
+{{- else }}
+{{- $image = printf "%s/%s:%s" .Values.registry .Values.controller.image.repository .Values.tag }}
+{{- end }}
+{{- end }}
+{{- end }}
 {{- if (semverCompare ">=1.9-0" (substr 1 -1 .Capabilities.KubeVersion.GitVersion)) }}
 apiVersion: apps/v1
 {{- else }}
@@ -35,6 +53,7 @@ spec:
         {{- end }}
       {{- if or .Values.controller.secret.enabled .Values.controller.configmap.enabled .Values.controller.podAnnotations .Values.autoGenerateCert }}
       annotations:
+        overrides: {{ toJson .Values | sha256sum }}
         {{- if .Values.controller.secret.enabled }}
         checksum/init-secret: {{ include (print $.Template.BasePath "/init-secret.yaml") . | sha256sum }}
         {{- end }}
@@ -78,25 +97,22 @@ spec:
       serviceAccountName: {{ .Values.serviceAccount }}
       serviceAccount: {{ .Values.serviceAccount }}
       {{- end }}
+      initContainers:
+        - name: init
+          image: {{ $image | quote }}
+          command: ["/usr/local/bin/upgrader", "pre-sync-hook", "--image", {{ $image | quote }}]
+          env:
+          - name: PODNAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: OVERRIDE_CHECKSUM
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.annotations['overrides']
       containers:
         - name: neuvector-controller-pod
-          {{- if .Values.global.azure.enabled }}
-          image: "{{ .Values.global.azure.images.controller.registry }}/{{ .Values.global.azure.images.controller.image }}@{{ .Values.global.azure.images.controller.digest }}"
-          {{- else }}
-          {{- if eq .Values.registry "registry.neuvector.com" }}
-          {{- if .Values.oem }}
-          image: "{{ .Values.registry }}/{{ .Values.oem }}/controller:{{ .Values.tag }}"
-          {{- else }}
-          image: "{{ .Values.registry }}/controller:{{ .Values.tag }}"
-          {{- end }}
-          {{- else }}
-          {{- if .Values.controller.image.hash }}
-          image: "{{ .Values.registry }}/{{ .Values.controller.image.repository }}@{{ .Values.controller.image.hash }}"
-          {{- else }}
-          image: "{{ .Values.registry }}/{{ .Values.controller.image.repository }}:{{ .Values.tag }}"
-          {{- end }}
-          {{- end }}
-          {{- end }}
+          image: {{ $image | quote }}
           {{- if $pre530 }}
           securityContext:
             privileged: true
@@ -203,7 +219,7 @@ spec:
               readOnly: true
           {{- else }}
           {{- end }}
-          {{- if .Values.internal.certmanager.enabled }}
+          {{- if or .Values.internal.certmanager.enabled .Values.internal.autoGenerateCert }}
             - mountPath: /etc/neuvector/certs/internal/cert.key
               subPath: {{ .Values.controller.internal.certificate.keyFile }}
               name: internal-cert
@@ -279,6 +295,11 @@ spec:
         - name: internal-cert
           secret:
             secretName: {{ .Values.controller.internal.certificate.secret }}
+      {{- else if .Values.internal.autoGenerateCert }}
+        - name: internal-cert
+          secret:
+            secretName: neuvector-internal-certs
+            optional: true
       {{- end }}
 {{- if gt (int .Values.controller.disruptionbudget) 0 }}
 ---
