@@ -106,6 +106,7 @@ spec:
           {{- end }}
           {{- end }}
           {{- end }}
+          imagePullPolicy: Always
           securityContext:
             privileged: true
           resources:
