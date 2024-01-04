@@ -52,6 +52,7 @@ spec:
     {{- end }}
       containers:
         - name: neuvector-enforcer-pod
+          imagePullPolicy: Always
           {{- if .Values.global.azure.enabled }}
           image: "{{ .Values.global.azure.images.enforcer.registry }}/{{ .Values.global.azure.images.enforcer.image }}@{{ .Values.global.azure.images.enforcer.digest }}"
           {{- else }}

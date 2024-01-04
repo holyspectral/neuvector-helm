@@ -101,6 +101,7 @@ spec:
         - name: init
           image: {{ $image | quote }}
           command: ["/usr/local/bin/upgrader", "pre-sync-hook", "--image", {{ $image | quote }}]
+          imagePullPolicy: Always
           env:
           - name: PODNAME
             valueFrom:
@@ -113,6 +114,7 @@ spec:
       containers:
         - name: neuvector-controller-pod
           image: {{ $image | quote }}
+          imagePullPolicy: Always
           {{- if $pre530 }}
           securityContext:
             privileged: true
