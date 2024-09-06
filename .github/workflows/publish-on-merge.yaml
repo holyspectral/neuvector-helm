@@ -1,4 +1,4 @@
-name: Publish Charts on tagging
+name: Publish Charts on merge
 
 on:
   push:
