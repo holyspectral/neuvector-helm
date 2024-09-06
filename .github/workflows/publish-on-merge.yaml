@@ -1,0 +1,25 @@
+name: Publish Charts on merge
+
+on:
+  push:
+    branches:
+      - 'master'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Get Git states
+        id: git_states
+        run: |
+          echo "COMMIT_TIME=$(git log -1 --format=%cd --date=format:%Y%m%d%H%M%S)" >> $GITHUB_OUTPUT
+          echo "SHA_SHORT=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      - name: Publish Helm charts
+        uses: holyspectral/helm-gh-pages@master
+        with:
+          charts_dir: charts
+          helm_version: 3.2.0
+          token: ${{ secrets.HELM_PUBLISHER_TOKEN }}
+          chart_version: 0.0.0-${{ steps.git_states.outputs.COMMIT_TIME }}-${{ steps.git_states.outputs.SHA_SHORT }}
+          target_dir: alpha
