@@ -15,6 +15,7 @@ monitor | Deploy monitoring services, such as Prometheus exporter. [chart](chart
 
 **IMPORTANT** - Each chart has a set of configuration values, especially for the 'core' chart. Review the Helm chart configuration values [here](charts/core) and make any required changes to the `values.yaml` file for your deployment.
 
+
 ### Adding chart repo
 
 ```console
