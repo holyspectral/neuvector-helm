@@ -1,8 +1,9 @@
-name: Publish Charts on tagging
+name: Publish Charts on merge
 
 on:
   push:
-    tags: '*'
+    branches:
+      - 'master'
 
 jobs:
   publish:
@@ -14,5 +15,4 @@ jobs:
         with:
           charts_dir: charts
           helm_version: 3.2.0
-          chart_version: ${{ github.ref_name }}
           token: ${{ secrets.HELM_PUBLISHER_TOKEN }}
