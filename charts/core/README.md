@@ -2,6 +2,8 @@
 
 Helm chart for NeuVector container security's core services.
 
+For testing
+
 ## CRD
 Because the CRD (Custom Resource Definition) policies can be deployed before NeuVector's core product, a new 'crd' helm chart is created. The crd template in the 'core' chart is kept for the backward compatibility. Please set `crdwebhook.enabled` to false, if you use the new 'crd' chart.
 
