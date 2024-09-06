@@ -2,7 +2,8 @@ name: Publish Charts on tagging
 
 on:
   push:
-    tags: '*'
+    branches:
+      - 'master'
 
 jobs:
   publish:
@@ -14,5 +15,4 @@ jobs:
         with:
           charts_dir: charts
           helm_version: 3.2.0
-          chart_version: $TAGS
           token: ${{ secrets.HELM_PUBLISHER_TOKEN }}
