@@ -3,6 +3,23 @@ entries:
   core:
   - apiVersion: v1
     appVersion: 5.3.4
+    created: "2024-09-09T21:48:24.207952489Z"
+    description: Helm chart for NeuVector's core services
+    digest: 0403cb36128931946c411283ade149b4a5c6b0177056fbd06e9bbcc5d7b81d4d
+    home: https://neuvector.com
+    icon: https://avatars2.githubusercontent.com/u/19367275?s=200&v=4
+    maintainers:
+    - email: support@neuvector.com
+      name: becitsthere
+    name: core
+    sources:
+    - https://github.com/neuvector/neuvector
+    - https://github.com/neuvector/neuvector-helm
+    urls:
+    - https://holyspectral.github.io/neuvector-helm/alpha/core-0.0.0-20240909174800-77dcb0d.tgz
+    version: 0.0.0-20240909174800-77dcb0d
+  - apiVersion: v1
+    appVersion: 5.3.4
     created: "2024-09-09T21:41:13.685364506Z"
     description: Helm chart for NeuVector's core services
     digest: cd0028153aeb2b3745712a409407fa52385c59b06788bc9c2bd9939747937801
@@ -38,6 +55,20 @@ entries:
   crd:
   - apiVersion: v1
     appVersion: 5.3.4
+    created: "2024-09-09T21:48:24.208228003Z"
+    description: Helm chart for NeuVector's CRD services
+    digest: f5c5b2607860363599f3bd9305c1423bae04b353c46da22780bf98b0ceb5d05a
+    home: https://neuvector.com
+    icon: https://avatars2.githubusercontent.com/u/19367275?s=200&v=4
+    maintainers:
+    - email: support@neuvector.com
+      name: becitsthere
+    name: crd
+    urls:
+    - https://holyspectral.github.io/neuvector-helm/alpha/crd-0.0.0-20240909174800-77dcb0d.tgz
+    version: 0.0.0-20240909174800-77dcb0d
+  - apiVersion: v1
+    appVersion: 5.3.4
     created: "2024-09-09T21:41:13.685706947Z"
     description: Helm chart for NeuVector's CRD services
     digest: 627e94cd16a0888a432c55b32fe7b5137c1fe60793cd2171879b641c7c5bd8c7
@@ -67,6 +98,20 @@ entries:
   monitor:
   - apiVersion: v1
     appVersion: 1-1.0.0
+    created: "2024-09-09T21:48:24.208690767Z"
+    description: Helm chart for NeuVector monitor services
+    digest: e1bfe1e701a87f1c36afa8a2f0d5f9fcf546bc56591ddbc262dc7e884a835902
+    home: https://neuvector.com
+    icon: https://avatars2.githubusercontent.com/u/19367275?s=200&v=4
+    maintainers:
+    - email: support@neuvector.com
+      name: becitsthere
+    name: monitor
+    urls:
+    - https://holyspectral.github.io/neuvector-helm/alpha/monitor-0.0.0-20240909174800-77dcb0d.tgz
+    version: 0.0.0-20240909174800-77dcb0d
+  - apiVersion: v1
+    appVersion: 1-1.0.0
     created: "2024-09-09T21:41:13.686345983Z"
     description: Helm chart for NeuVector monitor services
     digest: 4e49f017268e0560e69322363f6f669352839f804cdd7c0d220190e2b4e0daae
@@ -93,4 +138,4 @@ entries:
     urls:
     - https://holyspectral.github.io/neuvector-helm/alpha/monitor-0.0.0-20240909173735-203efd7.tgz
     version: 0.0.0-20240909173735-203efd7
-generated: "2024-09-09T21:41:13.682867064Z"
+generated: "2024-09-09T21:48:24.204785754Z"
