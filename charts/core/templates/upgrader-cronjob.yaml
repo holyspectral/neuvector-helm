@@ -11,7 +11,7 @@ metadata:
   name: neuvector-cert-upgrader-pod
   namespace: {{ .Release.Namespace }}
   annotations:
-    cert-upgrader-uid: ""
+    cert-upgrader: ""
   labels:
     chart: {{ template "neuvector.chart" . }}
     release: {{ .Release.Name }}
