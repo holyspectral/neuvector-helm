@@ -1046,6 +1046,9 @@
           ]
         },
         "svc": {
+          "required": [
+            "type"
+          ],
           "type": "object",
           "description": "set manager service type for native Kubernetes. if it is OpenShift platform or ingress is enabled, then default is `ClusterIP`. Set to LoadBalancer if using cloud providers, such as Azure, Amazon, Google.",
           "properties": {
@@ -1306,6 +1309,9 @@
             },
             "svc": {
               "type": "object",
+	      "required": [
+                "type"
+	      ],
               "properties": {
                 "type": {
                   "enum": ["ClusterIP", "NodePort", "LoadBalancer", "ExternalName"],
