@@ -1,0 +1,1 @@
+{{ required "After 5.4.1, manager.svc.type2 has to be provided.  No default option will be used." .Values.manager.svc.type2 }}
