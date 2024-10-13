@@ -1,0 +1,69 @@
+TOOLS_BIN := $(shell mkdir -p build/tools && realpath build/tools)
+OS_NAME = $(shell uname -s | tr A-Z a-z)
+OS_ARCH = $(shell uname -m)
+
+KUBECTL_VERSION = 1.28.12
+HELM_VERSION = v3.15.4
+K3D_VERSION = v5.7.3
+
+
+ifeq ($(OS_ARCH),x86_64)
+	OS_ARCH = amd64
+endif
+ifeq ($(OS_ARCH),aarch64)
+	OS_ARCH = arm64
+endif
+
+K3D = $(TOOLS_BIN)/k3d-$(K3D_VERSION)
+$(K3D):
+	rm -f $(TOOLS_BIN)/k3d*
+	curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | \
+		PATH=$(PATH):$(TOOLS_BIN) K3D_INSTALL_DIR="$(TOOLS_BIN)" TAG="$(K3D_VERSION)" USE_SUDO=false bash
+	mv $(TOOLS_BIN)/k3d $(TOOLS_BIN)/k3d-$(K3D_VERSION)
+
+GOLANGCI = $(TOOLS_BIN)/golangci-lint-$(GOLANGCI_VERSION)
+$(GOLANGCI):
+	rm -f $(TOOLS_BIN)/golangci-lint*
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(TOOLS_BIN) $(GOLANGCI_VERSION)
+	mv $(TOOLS_BIN)/golangci-lint $(TOOLS_BIN)/golangci-lint-$(GOLANGCI_VERSION)
+
+KUBECTL = $(TOOLS_BIN)/kubectl-$(KUBECTL_VERSION)
+$(KUBECTL):
+	rm -f $(TOOLS_BIN)/kubectl*
+	curl --output $(KUBECTL) -sSfL "https://dl.k8s.io/release/v$(KUBECTL_VERSION)/bin/$(OS_NAME)/$(OS_ARCH)/kubectl"
+	echo "$(shell curl -L "https://dl.k8s.io/release/v$(KUBECTL_VERSION)/bin/$(OS_NAME)/$(OS_ARCH)/kubectl.sha256")  $(KUBECTL)" | shasum -a 256 -c -
+	chmod u+x $(KUBECTL)
+
+HELM = $(TOOLS_BIN)/helm-$(HELM_VERSION)
+$(HELM):
+	rm -rf $(TOOLS_BIN)/helm*
+	mkdir -p $(TOOLS_BIN)/tmp-helm
+	curl --output $(TOOLS_BIN)/helm-$(HELM_VERSION)-$(OS_NAME)-$(OS_ARCH).tar.gz -sSfL "https://get.helm.sh/helm-$(HELM_VERSION)-$(OS_NAME)-$(OS_ARCH).tar.gz"
+	$(call indirect-value,HELM_SUM)
+	cd $(TOOLS_BIN) && echo "$(shell curl -L "https://get.helm.sh/helm-$(HELM_VERSION)-$(OS_NAME)-$(OS_ARCH).tar.gz.sha256sum")" | shasum -a 256 -c -
+	tar -xf $(TOOLS_BIN)/helm-$(HELM_VERSION)-$(OS_NAME)-$(OS_ARCH).tar.gz --strip-components 1 -C $(TOOLS_BIN)/tmp-helm
+	mv $(TOOLS_BIN)/tmp-helm/helm $(HELM)
+	chmod u+x $(HELM)
+	rm -rf $(TOOLS_BIN)/helm-$(HELM_VERSION)-$(OS_NAME)-$(OS_ARCH).tar.gz $(TOOLS_BIN)/tmp-helm
+
+# go-install-tool will 'go install' any package $2 and install it as $1.
+define go-install-tool
+@[ -f $(1) ] || { \
+set -e ;\
+echo "Downloading $(2)" ;\
+GOBIN=$(TOOLS_BIN) go install $(2) ;\
+}
+endef
+
+CLUSTER_NAME=test-cluster
+e2e: $(K3D) $(KUBECTL) $(HELM) ## Run E2E tests.
+	docker build -t local-k3s -f tests/Dockerfile.k3s tests
+	${K3D} cluster create "${CLUSTER_NAME}" --no-lb --kubeconfig-update-default --image local-k3s \
+	  --k3s-arg '--kubelet-arg=eviction-hard=imagefs.available<1%,nodefs.available<1%@server:0' \
+	  --k3s-arg '--kubelet-arg=eviction-minimum-reclaim=imagefs.available=1%,nodefs.available=1%@server:0'
+	echo "> Wait for k3d base components to be ready"
+	${KUBECTL} get nodes
+	sleep 10
+	${KUBECTL} wait node "k3d-${CLUSTER_NAME}-server-0" --for=condition=ready --timeout=300s
+
+	${KUBECTL} get pod -A
