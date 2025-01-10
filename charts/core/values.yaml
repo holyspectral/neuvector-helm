@@ -365,7 +365,7 @@ manager:
   #      - name: CUSTOM_PAGE_FOOTER_COLOR
   #        value: "#FFFFFF"
   svc:
-    type: NodePort # should be set to - ClusterIP
+    type: ClusterIP
     loadBalancerIP:
     annotations:
       {}
