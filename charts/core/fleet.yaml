@@ -12,6 +12,10 @@ helm:
   # is less that or equal to zero, we will not wait in Helm
   timeoutSeconds: 0
 
+  correctDrift:
+    enabled: true
+    keepFailHistory: true
+
   # Custom values that will be passed as values.yaml to the installation
   values:
     imagePullSecrets: my-docker-secret
