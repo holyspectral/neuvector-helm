@@ -1,0 +1,22 @@
+defaultNamespace: neuvector
+
+# Custom helm options
+helm:
+  # The release name to use. If empty a generated release name will be used
+  releaseName: neuvector
+
+  # Force recreate resource that can not be updated
+  force: false
+
+  # How long for helm to wait for the release to be active. If the value
+  # is less that or equal to zero, we will not wait in Helm
+  timeoutSeconds: 0
+
+  # Custom values that will be passed as values.yaml to the installation
+  values:
+    imagePullSecrets: my-docker-secret
+    containerd:
+      enabled: true
+    manager:
+      svc:
+        type: LoadBalancer
