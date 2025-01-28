@@ -1,6 +1,7 @@
 defaultNamespace: neuvector
 correctDrift:
   enabled: true
+  force: true
   keepFailHistory: true
 
 # Custom helm options
