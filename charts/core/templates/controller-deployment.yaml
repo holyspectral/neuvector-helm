@@ -153,6 +153,11 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
+            - name: NVGOMEMLIMIT
+              valueFrom:
+                resourceFieldRef:
+                  divisor: "0"
+                  resource: limits.memory
             - name: RANCHER_CLUSTER_NAME
               value: "{{ .Values.global.cattle.clusterName }}"
           {{- if .Values.controller.ranchersso.enabled }}
